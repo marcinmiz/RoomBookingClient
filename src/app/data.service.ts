@@ -32,7 +32,6 @@ export class DataService {
         id = user.id;
       }
     }
-    "use strict";
     newUser.id = id + 1;
     this.users.push(newUser);
     return of(newUser);
