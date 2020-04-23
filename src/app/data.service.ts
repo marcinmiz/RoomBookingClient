@@ -2,6 +2,8 @@ import {Injectable} from '@angular/core';
 import {Layout, LayoutCapacity, Room} from "./model/Room";
 import {User} from "./model/User";
 import {Observable, of} from "rxjs";
+import {Booking} from "./model/Booking";
+import {formatDate} from "@angular/common";
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +12,7 @@ export class DataService {
 
   private rooms : Array<Room>;
   private users : Array<User>;
+  private bookings : Array<Booking>;
 
   getRooms() : Observable<Array<Room>> {
     return of(this.rooms);
@@ -17,6 +20,10 @@ export class DataService {
 
   getUsers() : Observable<Array<User>> {
     return of(this.users);
+  }
+
+  getBookings() : Observable<Array<Booking>> {
+    return of(this.bookings);
   }
 
   updateUser(user : User) : Observable<User>{
@@ -73,6 +80,10 @@ export class DataService {
     return of(null);
   }
 
+  getBooking(id : number): Observable<Booking>{
+    return of(this.bookings.find(b => b.id === id));
+  }
+
   constructor() {
     this.rooms = new Array<Room>();
     const room1 = new Room();
@@ -121,6 +132,32 @@ export class DataService {
     user3.id = 3;
     user3.name = "Suzanne";
     this.users.push(user3);
+
+    this.bookings = new Array<Booking>();
+    const booking1 = new Booking();
+    booking1.id = 1;
+    booking1.room = room1;
+    booking1.user = user1;
+    booking1.layout = Layout.THEATER;
+    booking1.title = 'Example meeting';
+    booking1.date = formatDate(new Date(), 'yyyy-MM-dd', 'en-GB');
+    booking1.startTime = '11:30';
+    booking1.endTime = '12:30';
+    booking1.participants = 12;
+
+    const booking2 = new Booking();
+    booking2.id = 2;
+    booking2.room = room2;
+    booking2.user = user2;
+    booking2.layout = Layout.USHAPE;
+    booking2.title = 'Another meeting';
+    booking2.date = formatDate(new Date(), 'yyyy-MM-dd', 'en-GB');
+    booking2.startTime = '14:00';
+    booking2.endTime = '15:00';
+    booking2.participants = 5;
+
+    this.bookings.push(booking1);
+    this.bookings.push(booking2);
 
   }
 }
