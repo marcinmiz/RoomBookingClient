@@ -1,8 +1,8 @@
 <h1>Room Booking System</h1>
 
-<h2>The following meetings are taking place on: <input type="date"/></h2>
+<h2>The following meetings are taking place on: <input type="date" [(ngModel)]="selectedDate" name="selectedDate" (change)="dateChanged()"/></h2>
 
-<a class="btn btn-primary mt-3 mb-5">New Booking</a>
+<a class="btn btn-primary mt-3 mb-5" (click)="addBooking()">New Booking</a>
 
 <!-- only show this h3 if there are no bookings! -->
 <h3 class="mt-5" *ngIf="bookings.length === 0" >There are no meetings currently scheduled for this date.</h3>
@@ -27,7 +27,7 @@
       </div>
       <div class="col-6">
         <a class="btn btn-warning" (click)="editBooking(booking.id)">Amend</a>
-        <a class="btn btn-danger">Cancel</a>
+        <a class="btn btn-danger" (click)="deleteBooking(booking.id)">Cancel</a>
       </div>
     </div>
   </div>

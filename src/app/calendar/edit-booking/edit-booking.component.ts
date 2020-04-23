@@ -3,7 +3,7 @@ import {Booking} from "../../model/Booking";
 import {Layout, Room} from "../../model/Room";
 import {DataService} from "../../data.service";
 import {User} from "../../model/User";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-edit-booking',
@@ -19,7 +19,7 @@ export class EditBookingComponent implements OnInit {
   users: Array<User>;
 
   // editBookingEventSubscription : Subscription;
-  constructor(private dataService: DataService, private route : ActivatedRoute) {
+  constructor(private dataService: DataService, private route : ActivatedRoute, private router : Router) {
     this.dataService.getRooms().subscribe(
       next => this.rooms = next
     );
@@ -27,13 +27,29 @@ export class EditBookingComponent implements OnInit {
       next => this.users = next
     );
 
-        const id = route.snapshot.queryParams['id'];
-        this.dataService.getBooking(+id).subscribe(
-          next => this.booking = next
-        );
-
+    const id = route.snapshot.queryParams['id'];
+    if (id){
+      this.dataService.getBooking(+id).subscribe(
+        next => this.booking = next
+      );
+    } else {
+      this.booking = new Booking();
+    }
   }
 
+  onSubmit(){
+    if (this.booking.id == null){
+      this.dataService.addBooking(this.booking).subscribe(
+        next => this.router.navigate([''])
+      );
+    } else {
+      this.dataService.saveBooking(this.booking).subscribe(
+        next => this.router.navigate([''])
+      );
+
+    }
+
+  }
   ngOnInit(): void {
 
   }
