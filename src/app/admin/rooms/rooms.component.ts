@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {DataService} from "../../data.service";
 import {Room} from "../../model/Room";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -11,27 +11,50 @@ import {FormResetService} from "../../form-reset.service";
 })
 export class RoomsComponent implements OnInit {
 
-  rooms : Array<Room>;
-  selectedRoom : Room;
-  action : string;
+  rooms: Array<Room>;
+  selectedRoom: Room;
+  action: string;
+  loadingData = true;
+  message = 'Please wait... getting the list of rooms';
+  reloadAttempts = 0;
 
-  constructor(private dataService : DataService, private route : ActivatedRoute, private router : Router, private formResetService : FormResetService) { }
+  constructor(private dataService: DataService, private route: ActivatedRoute, private router: Router, private formResetService: FormResetService) {
+  }
 
-  ngOnInit(): void {
-  this.dataService.getRooms().subscribe(
-    next => {
-      this.rooms = next;
-    }
-  );
+  loadData() {
+    this.dataService.getRooms().subscribe(
+      (next) => {
+        this.rooms = next;
+        this.loadingData = false;
+        this.processUrlParams();
+      },
+      (error) => {
+        if (error.status === 402) {
+          this.message = 'Sorry - you need to pay to use this application. ';
+        } else {
+          this.reloadAttempts++;
+          if (this.reloadAttempts <= 10){
+            this.message = 'Sorry - something went wrong, trying again... please wait ';
+            this.loadData();
+          } else {
+            this.message = 'Sorry - something went wrong, please contact support.';
+          }
+        }
+      }
+    );
+
+  }
+
+  processUrlParams(){
     this.route.queryParams.subscribe(
-      (params) =>{
+      (params) => {
         this.action = null;
         const id = params['id'];
-        if (id){
-          this.selectedRoom = this.rooms.find( room => room.id === +id);
+        if (id) {
+          this.selectedRoom = this.rooms.find(room => room.id === +id);
           this.action = params['action'];
         }
-        if (params['action'] === 'add'){
+        if (params['action'] === 'add') {
           this.selectedRoom = new Room();
           this.action = 'edit';
           this.formResetService.resetRoomFormEvent.emit(this.selectedRoom);
@@ -40,12 +63,16 @@ export class RoomsComponent implements OnInit {
     );
   }
 
-  setRoom(id: number){
-  this.router.navigate(['admin','rooms'], {queryParams : {id, action : 'view'}});
+  ngOnInit(): void {
+    this.loadData();
   }
 
-  addRoom(){
-    this.router.navigate(['admin','rooms'], {queryParams : {action : 'add'}});
+  setRoom(id: number) {
+    this.router.navigate(['admin', 'rooms'], {queryParams: {id, action: 'view'}});
+  }
+
+  addRoom() {
+    this.router.navigate(['admin', 'rooms'], {queryParams: {action: 'add'}});
   }
 
 }

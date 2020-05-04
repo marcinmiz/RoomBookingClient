@@ -14,23 +14,41 @@ export class UsersComponent implements OnInit {
   users : Array<User>;
   selectedUser : User;
   action : string;
+  loadingData = true;
+  message = 'Please wait... getting the list of users';
 
   constructor(private dataService : DataService,  private route : ActivatedRoute, private router : Router, private formResetService : FormResetService) { }
 
-  ngOnInit(): void {
-  this.dataService.getUsers().subscribe(
-    next => {
-      this.users = next;
-    });
-  this.route.queryParams.subscribe(
-    (params) => {
-      const id = params['id'];
-      this.action = params['action'];
-      if (id){
-        this.selectedUser = this.users.find( (user) => user.id === +id);
+  loadData(){
+    this.dataService.getUsers().subscribe(
+      next => {
+        this.users = next;
+        this.loadingData = false;
+        this.processUrlParams();
+      },
+      error => {
+        this.message = 'An error ocurred, please contact support.';
       }
-    }
-  )
+    );
+  }
+
+  processUrlParams(){
+    this.route.queryParams.subscribe(
+      (params) => {
+        const id = params['id'];
+        this.action = params['action'];
+        if (id){
+          this.selectedUser = this.users.find( (user) => user.id === +id);
+        }
+      }
+    )
+
+  }
+
+  ngOnInit(): void {
+
+    this.loadData();
+
   }
 
   setUser(id : number){

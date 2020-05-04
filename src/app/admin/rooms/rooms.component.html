@@ -21,6 +21,7 @@
       </tr>
       </tbody>
     </table>
+    <div *ngIf="loadingData">{{message}}</div>
   </div>
   <div class="col-6">
     <app-room-detail *ngIf="action === 'view'"  [room]="selectedRoom" ></app-room-detail>

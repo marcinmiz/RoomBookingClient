@@ -18,6 +18,7 @@
       </tr>
       </tbody>
     </table>
+    <div *ngIf="loadingData">{{message}}</div>
   </div>
   <div class="col-6">
     <app-user-detail *ngIf="action === 'view'" [user]="selectedUser"></app-user-detail>
