@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
-import {Layout, LayoutCapacity, Room} from "./model/Room";
+import {Layout, Room} from "./model/Room";
 import {User} from "./model/User";
 import {Observable, of} from "rxjs";
 import {Booking} from "./model/Booking";
-import {formatDate} from "@angular/common";
 import {environment} from "../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {map} from "rxjs/operators";
@@ -13,13 +12,13 @@ import {map} from "rxjs/operators";
 })
 export class DataService {
 
-  getRooms() : Observable<Array<Room>> {
+  getRooms(): Observable<Array<Room>> {
     return this.http.get<Array<Room>>(environment.restURL + '/api/rooms')
       .pipe(
         map(
           data => {
             const rooms = new Array<Room>();
-            for (const room of data){
+            for (const room of data) {
               rooms.push(Room.fromHttp(room));
             }
             return rooms;
@@ -28,13 +27,13 @@ export class DataService {
       );
   }
 
-  getUsers() : Observable<Array<User>> {
-    return this.http.get<Array<User>> (environment.restURL + '/api/users')
+  getUsers(): Observable<Array<User>> {
+    return this.http.get<Array<User>>(environment.restURL + '/api/users')
       .pipe(
         map(
           data => {
             const users = new Array<User>();
-            for (const user of data){
+            for (const user of data) {
               users.push(User.fromHttp(user));
             }
             return users;
@@ -43,51 +42,69 @@ export class DataService {
       );
   }
 
-  getBookings(date : string) : Observable<Array<Booking>> {
+  getBookings(date: string): Observable<Array<Booking>> {
     return of(null);
   }
 
-  updateUser(user : User) : Observable<User>{
+  updateUser(user: User): Observable<User> {
+    return this.http.put<User>(environment.restURL + '/api/users', user);
+  }
+
+  addUser(newUser: User, password: string): Observable<User> {
+    const fullUser = {id: newUser.id, name: newUser.name, password: password};
+    return this.http.post<User>(environment.restURL + '/api/users', fullUser);
+  }
+
+  getCorrectedRoom(room: Room) {
+    const correctedRoom = {id: room.id, name: room.name, location: room.location, capacities: []};
+    for (const lc of room.capacities) {
+
+      let correctLayout;
+      for (let member in Layout) {
+        if (Layout[member] === lc.layout) {
+          correctLayout = member;
+        }
+      }
+
+      const correctedLayout = {layout: correctLayout, capacity: lc.capacity};
+      correctedRoom.capacities.push(correctedLayout);
+    }
+    return correctedRoom;
+  }
+
+  updateRoom(room: Room): Observable<Room> {
+    return this.http.put<Room>(environment.restURL + '/api/rooms', this.getCorrectedRoom(room));
+  }
+
+  addRoom(newRoom: Room): Observable<Room> {
+    return this.http.post<Room>(environment.restURL + '/api/rooms', this.getCorrectedRoom(newRoom));
+  }
+
+  deleteRoom(id: number): Observable<any> {
     return of(null);
   }
 
-  addUser(newUser : User, password : string) : Observable<User>{
+  deleteUser(id: number): Observable<any> {
     return of(null);
   }
 
-  updateRoom(room : Room) : Observable<Room> {
+  resetUserPassword(id: number): Observable<any> {
     return of(null);
   }
 
-  addRoom(newRoom : Room) : Observable<Room>{
+  getBooking(id: number): Observable<Booking> {
     return of(null);
   }
 
-  deleteRoom(id : number): Observable<any>{
+  addBooking(newBooking: Booking): Observable<Booking> {
     return of(null);
   }
 
-  deleteUser(id : number) : Observable<any> {
+  saveBooking(booking: Booking): Observable<Booking> {
     return of(null);
   }
 
-  resetUserPassword(id : number) : Observable<any>  {
-    return of(null);
-  }
-
-  getBooking(id : number): Observable<Booking>{
-    return of(null);
-  }
-
-  addBooking(newBooking : Booking) : Observable<Booking> {
-    return of(null);
-  }
-
-  saveBooking(booking: Booking) : Observable<Booking> {
-    return of(null);
-  }
-
-  deleteBooking(id : number) : Observable<any> {
+  deleteBooking(id: number): Observable<any> {
     return of(null);
   }
 

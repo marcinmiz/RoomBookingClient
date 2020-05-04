@@ -25,7 +25,7 @@
   </div>
   <div class="col-6">
     <app-room-detail *ngIf="action === 'view'"  [room]="selectedRoom" ></app-room-detail>
-    <app-room-edit *ngIf="action === 'edit' || action === 'add'"  [room]="selectedRoom" ></app-room-edit>
+    <app-room-edit *ngIf="action === 'edit' || action === 'add'"  [room]="selectedRoom" (dataChangedEvent)="loadData()" ></app-room-edit>
   </div>
 </div>
 
