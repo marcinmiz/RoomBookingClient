@@ -2,6 +2,7 @@
   <h2>Room details</h2>
   <a class="btn btn-small btn-warning" (click)="editRoom()">edit</a>
   <a class="btn btn-small btn-warning" (click)="deleteRoom()">delete</a>
+  <div class="bg-warning p-5" *ngIf="message">{{message}}</div>
   <table>
     <tr>
       <td>id</td><td>{{room?.id}}</td>
