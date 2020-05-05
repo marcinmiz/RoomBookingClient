@@ -42,8 +42,17 @@ export class DataService {
       );
   }
 
-  getBookings(date: string): Observable<Array<Booking>> {
-    return of(null);
+  getBookings(date : string): Observable<Array<Booking>> {
+    return this.http.get<Array<Booking>>(environment.restURL + '/api/bookings/' + date)
+      .pipe(
+        map(data => {
+          const bookings = new Array<Booking>();
+          for (const booking of data){
+            bookings.push(Booking.fromHttp(booking));
+          }
+          return bookings;
+        })
+      );
   }
 
   updateUser(user: User): Observable<User> {
@@ -96,6 +105,7 @@ export class DataService {
     return of(null);
   }
 
+
   addBooking(newBooking: Booking): Observable<Booking> {
     return of(null);
   }
@@ -105,7 +115,7 @@ export class DataService {
   }
 
   deleteBooking(id: number): Observable<any> {
-    return of(null);
+    return this.http.delete(environment.restURL + '/api/bookings/' + id);
   }
 
   constructor(private http: HttpClient) {

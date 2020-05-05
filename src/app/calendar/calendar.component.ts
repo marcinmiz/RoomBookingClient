@@ -12,28 +12,42 @@ import {formatDate} from "@angular/common";
 export class CalendarComponent implements OnInit {
 
   bookings: Array<Booking>;
-  selectedDate : string;
+  selectedDate: string;
+  message = '';
+  dataLoaded = false;
 
-  constructor(private dataService: DataService, private router: Router, private route : ActivatedRoute) {
+  constructor(private dataService: DataService, private router: Router, private route: ActivatedRoute) {
+
+  }
+
+  loadData() {
+    this.message = 'Loading data...';
+    this.route.queryParams.subscribe(
+      params => {
+        this.selectedDate = params['date'];
+        if (!this.selectedDate) {
+          this.selectedDate = formatDate(new Date(), 'yyyy-MM-dd', 'en-GB');
+        }
+        this.dataService.getBookings(this.selectedDate).subscribe(
+          next => {
+            this.bookings = next;
+            this.dataLoaded = true;
+            this.message = '';
+          }
+        );
+      },
+      error => {
+        this.message = 'Sorry, the data could not be loaded.';
+      }
+    );
 
   }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(
-      params => {
-        this.selectedDate = params['date'];
-        if(!this.selectedDate){
-          this.selectedDate = formatDate(new Date(), 'yyyy-MM-dd','en-GB');
-        }
-        this.dataService.getBookings(this.selectedDate).subscribe(
-          next => this.bookings = next
-        );
-
-      }
-    );
+    this.loadData();
   }
 
-  editBooking(id : number){
+  editBooking(id: number) {
     this.router.navigate(['editBooking'], {queryParams: {id}});
   }
 
@@ -41,18 +55,20 @@ export class CalendarComponent implements OnInit {
     this.router.navigate(['addBooking']);
   }
 
-  deleteBooking(id : number) {
-    this.dataService.deleteBooking(id).subscribe(
-      next => {
-        this.dataService.getBookings(this.selectedDate).subscribe(
-          next => this.bookings = next
-        );
-
-      }
-    );
+  deleteBooking(id: number) {
+    if (confirm('Are you sure you wish to delete this booking?')) {
+      this.message = 'deleting please wait...';
+      this.dataService.deleteBooking(id).subscribe(
+        next => {
+          this.message = '';
+          this.loadData();
+        },
+        error => this.message = 'Sorry, this booking cannot be deleted at this time.'
+      );
+    }
   }
 
-  dateChanged(){
-    this.router.navigate([''],{queryParams: {date : this.selectedDate}});
+  dateChanged() {
+    this.router.navigate([''], {queryParams: {date: this.selectedDate}});
   }
 }

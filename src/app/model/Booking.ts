@@ -15,4 +15,18 @@ export class Booking {
   getDateAsDate() {
     return new Date(this.date);
   }
+
+  static fromHttp(booking : Booking){
+    const newBooking = new Booking();
+    newBooking.id = booking.id;
+    newBooking.room = booking.room;
+    newBooking.user = booking.user;
+    newBooking.layout = booking.layout;
+    newBooking.title = booking.title;
+    newBooking.date = booking.date;
+    newBooking.startTime = booking.startTime;
+    newBooking.endTime = booking.endTime;
+    newBooking.participants = booking.participants;
+    return newBooking;
+  }
 }

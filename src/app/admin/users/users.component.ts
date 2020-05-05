@@ -27,7 +27,7 @@ export class UsersComponent implements OnInit {
         this.processUrlParams();
       },
       error => {
-        this.message = 'An error ocurred, please contact support.';
+        this.message = 'An error occurred, please contact support.';
       }
     );
   }
